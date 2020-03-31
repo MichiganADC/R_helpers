@@ -376,7 +376,9 @@ derive_consensus_dx <- function(df) {
         "Mixed dementia",
       normcog == 1 ~ "NL",
       normcog == 0 & demented == 0 & 
-        (mciamem == 1 | mciaplus == 1 | mcinon1 == 1 | mcinon2 == 1) ~ "MCI",
+        (mciamem == 1 | mciaplus == 1) ~ "aMCI",
+      normcog == 0 & demented == 0 &
+        (mcinon1 == 1 | mcinon2 == 1) ~ "naMCI",
       normcog == 0 & demented == 0 &
         impnomci == 1 ~ "Impaired not MCI",
       normcog == 0 & demented == 1 & (amndem == 1 | namndem == 1) &
