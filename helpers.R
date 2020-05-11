@@ -371,12 +371,14 @@ derive_consensus_dx <- function(df) {
   df %>% 
     # create MADC diagnosis field
     rowwise() %>% 
-    mutate(madc_dx = case_when(
+    mutate(madc_initial_dx = case_when(
       sum(amndem, pca, ppasyn, ftdsyn, lbdsyn, namndem, na.rm = TRUE) > 1 ~
         "Mixed dementia",
       normcog == 1 ~ "NL",
       normcog == 0 & demented == 0 & 
-        (mciamem == 1 | mciaplus == 1 | mcinon1 == 1 | mcinon2 == 1) ~ "MCI",
+        (mciamem == 1 | mciaplus == 1) ~ "aMCI",
+      normcog == 0 & demented == 0 &
+        (mcinon1 == 1 | mcinon2 == 1) ~ "naMCI",
       normcog == 0 & demented == 0 &
         impnomci == 1 ~ "Impaired not MCI",
       normcog == 0 & demented == 1 & (amndem == 1 | namndem == 1) &
@@ -397,6 +399,36 @@ derive_consensus_dx <- function(df) {
            is.na(ftldmo) |
            is.na(ftldnos)) ~ "PPA",
       demented == 1 ~ "Other dementia",
+      TRUE ~ NA_character_
+    ),
+    madc_fu_dx = case_when(
+      sum(fu_amndem, fu_pca, fu_ppasyn, fu_ftdsyn, fu_lbdsyn, fu_namndem, na.rm = TRUE) > 1 ~
+        "Mixed dementia",
+      fu_normcog == 1 ~ "NL",
+      fu_normcog == 0 & fu_demented == 0 & 
+        (fu_mciamem == 1 | fu_mciaplus == 1) ~ "aMCI",
+      fu_normcog == 0 & fu_demented == 0 &
+        (fu_mcinon1 == 1 | fu_mcinon2 == 1) ~ "naMCI",
+      fu_normcog == 0 & fu_demented == 0 &
+        fu_impnomci == 1 ~ "Impaired not MCI",
+      fu_normcog == 0 & fu_demented == 1 & (fu_amndem == 1 | fu_namndem == 1) &
+        fu_alzdis == 1 & fu_alzdisif == 1 ~ "AD",
+      fu_normcog == 0 & fu_demented == 1 & fu_lbdsyn == 1 ~ "LBD",
+      fu_normcog == 0 & fu_demented == 1 & 
+        (fu_ftdsyn == 1 | 
+           (fu_psp == 1 & fu_pspif == 1) |
+           (fu_cort == 1 & fu_cortif == 1) |
+           (fu_ftldmo == 1 & fu_ftldmoif == 1) | 
+           (fu_ftldnos == 1 & fu_ftldnoif == 1)) ~ "FTD",
+      fu_normcog == 0 & fu_demented == 1 &
+        fu_cvd == 1 & fu_cvdif == 1 ~ "Vascular dementia",
+      fu_normcog == 0 & fu_demented == 1 &
+        fu_ppasyn == 1 &
+        (is.na(fu_psp) |
+           is.na(fu_cort) |
+           is.na(fu_ftldmo) |
+           is.na(fu_ftldnos)) ~ "PPA",
+      fu_demented == 1 ~ "Other dementia",
       TRUE ~ NA_character_
     )) %>% 
     ungroup()
