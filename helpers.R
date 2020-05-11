@@ -463,6 +463,20 @@ load_libraries <- function(libs) {
 }
 
 
+pad_with <- function(x, char, n, side = "left") {
+  if (!is.vector(x)) 
+    stop("x is not a vector")
+  
+  max_nchar <- max(nchar(x), na.rm = TRUE)
+  if (max_nchar > n)
+    stop("max nchar is greater than n")
+  
+  if (side == "left")
+    paste0(strrep(char, n - nchar(x)), x) %>% na_if("NANA")
+  else
+    paste0(x, strrep(char, n - nchar(x))) %>% na_if("NANA")
+}
+
 ###@    #==--  :  --==#    @##==---==##@##==---==##@    #==--  :  --==#    @###
 #==##@    #==-- --==#    @##==---==##@   @##==---==##@    #==-- --==#    @##==#
 #--==##@    #==-==#    @##==---==##@   #   @##==---==##@    #==-==#    @##==--#
