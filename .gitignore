@@ -3,8 +3,11 @@
 .RData
 .Ruserdata
 
+.idea/
+
 config.R
 *.txt
 *.doc*
 *.csv
 *.xls*
+*.tar*
